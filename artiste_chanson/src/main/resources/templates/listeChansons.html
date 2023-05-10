@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorator="template"
+      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+    <head>
+        <meta charset="utf-8">
+        <title>Liste des Chansons</title>
+        <link rel="stylesheet" type="text/css" href="webjars/bootstrap/4.3.1/css/bootstrap.min.css" />
+    </head>
+    <body>
+ <div th:replace="template"></div>
+        <div class="container mt-5">
+            <div class="card">
+                <div class="card-header">
+                    Liste des Chansons
+                </div>
+                <div class="card-body">
+                    <table class="table table-striped">
+                        <tr>
+                            <th>ID</th><th>Date Creation</th><th>Nom</th><th>Artiste</th>
+                        </tr> 
+                        <tr th:each="f:${chansons.content}">
+                            <td th:text="${f.idChanson}"></td>
+                            <td th:text="${f.dateCreation}"></td>
+                            <td th:text="${f.nom}"></td> 
+                            
+                            
+                            <td th:if="${!#strings.isEmpty(f.artiste)}" th:text="${f.artiste.getNom()}"></td>  
+                            <td th:if="${#strings.isEmpty(f.artiste)}" th:text="${'Pas artiste'}"></td> 
+                            
+                            
+                            <td sec:authorize="hasRole('ADMIN')">
+                                <a class="btn btn-success" th:href="@{modifierChanson(id=${f.idChanson},page=${currentPage})}">Editer</a>
+                            </td>
+                            <td sec:authorize="hasRole('ADMIN')">
+                                <a class="btn btn-danger" onclick="return confirm('Etes-vous sûr ?')" th:href="@{supprimerChanson(id=${f.idChanson}, page=${currentPage}, size=${size})}">Supprimer</a>
+                            </td>
+                        </tr> 
+                    </table>
+                    <ul class="nav nav-pills">
+                        <li th:each="page,status:${pages}">
+                            <a th:class="${status.index==currentPage?'btn btn-primary':'btn' }"
+                               th:href="@{ ListeChansons(page=${status.index}, size=${size} ) }"
+                               th:text="${status.index }"></a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>
